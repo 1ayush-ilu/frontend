@@ -4,7 +4,9 @@ import { io } from "socket.io-client";
 import api from "../api";
 import Timer from "../components/Timer";
 
-const socket = io(process.env.REACT_APP_API.replace("/api",""), { transports: ["websocket"] });
+const API_URL = process.env.REACT_APP_API || "http://localhost:5000/api"; 
+const socket = io(API_URL.replace("/api", ""), { transports: ["websocket"] });
+
 
 export default function QuizPage() {
   const { id } = useParams();
