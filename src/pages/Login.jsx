@@ -1,33 +1,50 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 
-export default function Login() {
-  const { login } = useAuth();
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const nav = useNavigate();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const onSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try { await login(email, password); nav("/dashboard"); }
-    catch (err) { setError(err?.response?.data?.msg || "Login failed"); }
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      alert("Login failed: " + (err.response?.data?.msg || err.message));
+    }
   };
 
   return (
-    <div className="container">
-      <motion.div initial={{y:20, opacity:0}} animate={{y:0, opacity:1}} className="card max-w-md mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
-        {error && <p className="text-red-400 mb-3">{error}</p>}
-        <form onSubmit={onSubmit} className="space-y-3">
-          <input className="input" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
-          <input className="input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} />
-          <button className="btn w-full">Login</button>
-        </form>
-        <p className="mt-3 text-sm text-white/70">New here? <Link className="underline" to="/register">Create an account</Link></p>
-      </motion.div>
+    <div className="flex justify-center items-center h-screen">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80">
+        <h2 className="text-xl font-bold mb-4 text-center">Login</h2>
+        <input
+          type="email"
+          placeholder="Email"
+          className="border p-2 w-full mb-3"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-2 w-full mb-3"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit" className="bg-blue-500 text-white w-full py-2 rounded">
+          Login
+        </button>
+        <p className="mt-4 text-center text-sm">
+          New here? <Link to="/register" className="text-blue-600">Register</Link>
+        </p>
+      </form>
     </div>
   );
-}
+};
+
+export default Login;

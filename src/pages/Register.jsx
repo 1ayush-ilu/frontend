@@ -1,43 +1,84 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 
-export default function Register() {
+const Register = () => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "student",
+  });
+
   const { register } = useAuth();
-  const [form, setForm] = useState({ name:"", email:"", password:"", role:"student" });
-  const [error, setError] = useState("");
-  const nav = useNavigate();
+  const navigate = useNavigate();
 
-  const onSubmit = async (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try { await register(form); nav("/dashboard"); }
-    catch (err) { setError(err?.response?.data?.msg || "Register failed"); }
+    try {
+      await register(form);
+      navigate("/dashboard");
+    } catch (err) {
+      alert("Registration failed: " + (err.response?.data?.msg || err.message));
+    }
   };
 
   return (
-    <div className="container">
-      <motion.div initial={{y:20, opacity:0}} animate={{y:0, opacity:1}} className="card max-w-md mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Register</h2>
-        {error && <p className="text-red-400 mb-3">{error}</p>}
-        <form onSubmit={onSubmit} className="space-y-3">
-          <input className="input" placeholder="Name" value={form.name} onChange={e=>setForm({...form, name:e.target.value})} />
-          <input className="input" placeholder="Email" value={form.email} onChange={e=>setForm({...form, email:e.target.value})} />
-          <input className="input" type="password" placeholder="Password" value={form.password} onChange={e=>setForm({...form, password:e.target.value})} />
-          <div className="flex gap-4 text-sm">
-            <label className="flex items-center gap-2">
-              <input type="radio" name="role" checked={form.role==="student"} onChange={()=>setForm({...form, role:"student"})}/>
-              Student
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="radio" name="role" checked={form.role==="host"} onChange={()=>setForm({...form, role:"host"})}/>
-              Host
-            </label>
-          </div>
-          <button className="btn w-full">Create Account</button>
-        </form>
-        <p className="mt-3 text-sm text-white/70">Have an account? <Link className="underline" to="/login">Login</Link></p>
-      </motion.div>
+    <div className="flex justify-center items-center h-screen">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-96">
+        <h2 className="text-xl font-bold mb-4 text-center">Register</h2>
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          className="border p-2 w-full mb-3"
+          value={form.name}
+          onChange={handleChange}
+        />
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="border p-2 w-full mb-3"
+          value={form.email}
+          onChange={handleChange}
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="border p-2 w-full mb-3"
+          value={form.password}
+          onChange={handleChange}
+        />
+
+        <select
+          name="role"
+          className="border p-2 w-full mb-3"
+          value={form.role}
+          onChange={handleChange}
+        >
+          <option value="student">Student</option>
+          <option value="host">Host</option>
+        </select>
+
+        <button type="submit" className="bg-green-500 text-white w-full py-2 rounded">
+          Register
+        </button>
+
+        <p className="mt-4 text-center text-sm">
+          Already have an account? <Link to="/login" className="text-blue-600">Login</Link>
+        </p>
+      </form>
     </div>
   );
-}
+};
+
+export default Register;

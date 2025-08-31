@@ -6,13 +6,12 @@ const AuthCtx = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user") || "null"));
 
-  // ✅ Verify token on mount
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return logout();
+      if (!token) return;
       try {
-        const { data } = await api.get("/auth/me"); // <-- make sure backend has this route
+        const { data } = await api.get("/auth/me");
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
       } catch {
