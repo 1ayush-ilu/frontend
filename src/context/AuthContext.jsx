@@ -11,7 +11,9 @@ export function AuthProvider({ children }) {
       const token = localStorage.getItem("token");
       if (!token) return;
       try {
-        const { data } = await api.get("/auth/me");
+        const { data } = await api.get("/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
       } catch {
